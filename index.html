@@ -85,8 +85,9 @@
     </p>
   </footer>
 
-  <!-- 弹幕脚本 -->
+  <!-- 弹幕脚本 + 倒计时 -->
   <script>
+    // ============ 弹幕效果 ============
     const danmakuTexts = [
       '✅ 审核通过率98%',
       '⚡ 秒到账！',
@@ -109,11 +110,37 @@
       el.style.color = Math.random() > 0.5 ? '#3b82f6' : '#f97316';
       container.appendChild(el);
       
-      // 动画结束后移除
       setTimeout(() => el.remove(), 8000);
     }
 
     setInterval(createDanmaku, 1500);
+
+    // ============ 倒计时逻辑 ============
+    // 设置截止时间为今天23:59:59
+    function updateCountdown() {
+      const now = new Date();
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      const diff = endOfDay - now;
+      
+      if (diff <= 0) {
+        document.getElementById('countdown').textContent = '00:00:00';
+        return;
+      }
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      const format = (n) => n.toString().padStart(2, '0');
+      document.getElementById('countdown').textContent = 
+        `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+    }
+
+    // 立即更新一次，然后每秒更新
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
   </script>
 </body>
 </html>
