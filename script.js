@@ -1,10 +1,11 @@
 /**
- * meme-loan - 核心交互脚本
- * 功能：摄像头调用、动作模拟、音效生成、状态管理
+ * meme-loan - 核心交互脚本（明亮版）
+ * 功能：纯动画模拟 + 音效生成 + 状态管理
+ * 不依赖摄像头，纯前端交互
  */
 
 // ============ 音效生成（Web Audio API） ============
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)());
 
 function playBeep(freq = 800, duration = 100, type = 'sine') {
   const osc = audioCtx.createOscillator();
@@ -24,127 +25,92 @@ function playSuccess() {
   });
 }
 
-function playError() {
-  playBeep(200, 300, 'sawtooth');
-}
+// ============ 动作序列配置 ============
+const actions = [
+  { text: '📸 正在检测人脸...', icon: '📸', face: '😊', progress: 10, duration: 1200 },
+  { text: '😱 请张大嘴巴，像被催收吓到一样', icon: '😱', face: '😮', progress: 30, duration: 2500 },
+  { text: '🙀 请用力摇头，表示"我没有网贷"', icon: '🙀', face: '😵', progress: 50, duration: 2500 },
+  { text: '👁️ 请眨眨眼，证明你还清醒', icon: '👁️', face: '😉', progress: 70, duration: 2000 },
+  { text: '⏳ 正在分析信用状况...', icon: '💭', face: '🤔', progress: 90, duration: 1500 },
+  { text: '✅ 验证通过！', icon: '✅', face: '😎', progress: 100, duration: 1000 }
+];
 
-// ============ 摄像头控制 ============
-async function startCamera() {
-  try {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: 640, height: 480 },
-      audio: false
-    });
-    return stream;
-  } catch (err) {
-    console.error('摄像头启动失败:', err);
-    throw err;
+let currentAction = 0;
+
+// ============ UI 更新函数 ============
+function updateUI(action) {
+  const promptEl = document.getElementById('prompt');
+  const actionIcon = document.getElementById('actionIcon');
+  const faceIcon = document.getElementById('faceIcon');
+  const progressEl = document.getElementById('progress');
+  const statusEl = document.getElementById('status');
+  const scanLine = document.getElementById('scanLine');
+
+  if (promptEl) promptEl.textContent = action.text;
+  if (actionIcon) actionIcon.textContent = action.icon;
+  if (faceIcon) faceIcon.textContent = action.face;
+  if (progressEl) progressEl.style.width = action.progress + '%';
+  if (statusEl) statusEl.textContent = `进度: ${action.progress}%`;
+
+  // 扫描线显示控制（20%-80% 进度显示）
+  if (scanLine) {
+    if (action.progress >= 20 && action.progress <= 80) {
+      scanLine.classList.remove('hidden');
+    } else {
+      scanLine.classList.add('hidden');
+    }
+  }
+
+  // 随机音效（模拟检测声）
+  if (action.progress > 0 && action.progress < 100) {
+    const freq = 600 + Math.random() * 400;
+    playBeep(freq, 50, 'square');
   }
 }
 
-function stopCamera(stream) {
-  if (stream) {
-    stream.getTracks().forEach(track => track.stop());
+// ============ 动作序列执行 ============
+function runActionSequence() {
+  if (currentAction >= actions.length) {
+    finishCheck();
+    return;
   }
+
+  const action = actions[currentAction];
+  updateUI(action);
+  currentAction++;
+
+  setTimeout(runActionSequence, action.duration);
 }
 
-// ============ 动作检测（模拟） ============
-// 注意：真实的人脸/动作检测需要 TensorFlow.js 或 Face-api.js
-// 这里用简单的定时器和随机数模拟"检测"过程
-function simulateActionDetection() {
-  return new Promise((resolve) => {
-    const steps = [
-      { name: 'detecting', duration: 1500, progress: 10 },
-      { name: 'mouth_open', duration: 3000, progress: 30 },
-      { name: 'head_shake', duration: 3000, progress: 50 },
-      { name: 'blink', duration: 2500, progress: 70 },
-      { name: 'analyzing', duration: 2000, progress: 90 }
-    ];
-
-    let current = 0;
-    const interval = setInterval(() => {
-      if (current >= steps.length) {
-        clearInterval(interval);
-        resolve();
-        return;
-      }
-      const step = steps[current];
-      updateProgress(step.progress);
-      updatePrompt(getPromptText(step.name));
-      playRandomBeep();
-      current++;
-    }, 500); // 每0.5秒更新一次
-  });
-}
-
-function getPromptText(action) {
-  const prompts = {
-    detecting: '📸 正在检测人脸...',
-    mouth_open: '😱 请张大嘴巴，像被催收吓到一样',
-    head_shake: '🙀 请用力摇头，表示"我没有网贷"',
-    blink: '👁️ 请眨眨眼，证明你还清醒',
-    analyzing: '⏳ 正在分析信用状况...'
-  };
-  return prompts[action] || '处理中...';
-}
-
-function updateProgress(percent) {
-  const bar = document.getElementById('progress');
-  const status = document.getElementById('status');
-  if (bar) bar.style.width = percent + '%';
-  if (status) status.textContent = `进度: ${percent}%`;
-}
-
-function updatePrompt(text) {
-  const el = document.getElementById('prompt');
-  if (el) el.innerHTML = text;
-}
-
-function playRandomBeep() {
-  // 随机高频短音，模拟"滴滴"检测声
-  const freq = 600 + Math.random() * 400;
-  playBeep(freq, 50, 'square');
-}
-
-// ============ 主流程 ============
-async function initFaceCheck() {
-  const video = document.getElementById('video');
+// ============ 完成处理 ============
+function finishCheck() {
+  const promptEl = document.getElementById('prompt');
+  const actionIcon = document.getElementById('actionIcon');
   const nextBtn = document.getElementById('nextBtn');
+  const scanLine = document.getElementById('scanLine');
 
-  try {
-    // 1. 启动摄像头
-    const stream = await startCamera();
-    video.srcObject = stream;
-    updatePrompt('📸 摄像头已启动，准备验证...');
+  if (promptEl) promptEl.innerHTML = '<span class="text-success">🎉 验证通过！正在跳转...</span>';
+  if (actionIcon) actionIcon.classList.add('hidden');
+  if (scanLine) scanLine.classList.add('hidden');
+  if (nextBtn) nextBtn.classList.remove('hidden');
 
-    // 2. 等待视频流稳定
-    await new Promise(r => setTimeout(r, 1000));
+  playSuccess();
 
-    // 3. 开始动作模拟检测
-    await simulateActionDetection();
-
-    // 4. 完成
-    updatePrompt('✅ 验证通过！正在跳转...');
-    playSuccess();
-    nextBtn.classList.remove('hidden');
-
-    // 5. 1秒后关闭摄像头（节省资源）
-    setTimeout(() => stopCamera(stream), 1000);
-
-  } catch (err) {
-    updatePrompt('❌ 摄像头启动失败，请检查权限或使用 HTTPS');
-    playError();
-  }
+  // 3秒后自动跳转
+  setTimeout(() => {
+    window.location.href = 'result.html';
+  }, 3000);
 }
 
-// 页面加载后自动启动
+// ============ 初始化 ============
 window.addEventListener('DOMContentLoaded', () => {
-  // 首次用户交互后才能播放音频（浏览器策略）
+  // 首次用户交互后恢复音频上下文
   document.body.addEventListener('click', () => {
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
     }
   }, { once: true });
 
-  initFaceCheck();
+  // 延迟启动，让用户先看到页面
+  setTimeout(runActionSequence, 500);
 });
