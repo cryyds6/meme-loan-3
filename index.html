@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>张张嘴，摇摇头，智商税秒到账</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+  <!-- 弹幕层 -->
+  <div id="danmakuContainer"></div>
+
+  <!-- 主卡片 -->
+  <div class="glass-card p-8 max-w-2xl w-full relative overflow-hidden">
+    <!-- 装饰光效 -->
+    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-radial from-yellow-500/20 to-transparent rounded-full blur-3xl -mr-32 -mt-32"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-gradient-radial from-green-500/20 to-transparent rounded-full blur-3xl -ml-32 -mb-32"></div>
+
+    <!-- 标题区 -->
+    <div class="text-center mb-8">
+      <h1 class="text-5xl md:text-7xl font-black mb-4 neon-gold">
+        🚀 极速放款
+      </h1>
+      <p class="text-2xl md:text-3xl text-gray-300 mb-2">
+        3分钟到账 · 无需抵押 · 黑户可贷
+      </p>
+      <div class="flex items-center justify-center gap-4 mt-4">
+        <div class="text-4xl font-bold neon-green">
+          ¥ 300,000
+        </div>
+        <div class="text-xl text-gray-400">
+          额度已审批
+        </div>
+      </div>
+    </div>
+
+    <!-- 倒计时 + 名额 -->
+    <div class="flex justify-center items-center gap-8 mb-8">
+      <div class="text-center">
+        <p class="text-gray-400 mb-2">⏳ 距离放款截止</p>
+        <div id="countdown" class="countdown">02:14:33</div>
+      </div>
+      <div class="text-center">
+        <p class="text-gray-400 mb-2">🔥 剩余名额</p>
+        <div class="text-4xl font-bold neon-pink">2个</div>
+      </div>
+    </div>
+
+    <!-- 大按钮 -->
+    <div class="text-center mb-8">
+      <a href="face-check.html" class="btn-main inline-block">
+        💰 立即领取额度
+      </a>
+      <p class="text-sm text-gray-500 mt-4">
+        ⚠️ 仅限今日 · 先到先得 · 秒批秒放
+      </p>
+    </div>
+
+    <!-- 弹幕提示 -->
+    <div class="text-center text-sm text-gray-500">
+      <p>已有 <span class="neon-green font-bold">98,462</span> 人成功借款</p>
+      <div class="flex justify-center gap-4 mt-2 text-xs">
+        <span class="text-green-400">✓ 审核通过率 98%</span>
+        <span class="text-pink-400">✓ 平均放款时间 3分钟</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部免责声明 -->
+  <footer class="mt-8 text-center text-xs text-gray-600 max-w-lg">
+    <p>
+      本项目纯属艺术创作，旨在讽刺某些非正规借贷广告的荒诞性。<br>
+      不收集任何人脸数据，不开通任何金融功能。<br>
+      警惕过度借贷，珍视个人信用。
+    </p>
+  </footer>
+
+  <!-- 弹幕脚本 -->
+  <script>
+    const danmakuTexts = [
+      '✅ 审核通过率98%',
+      '⚡ 秒到账！',
+      '🎉 恭喜用户138***456借款成功',
+      '💸 已放款¥9,999,999',
+      '🔥 仅剩2个名额！',
+      '⏰ 3分钟到账',
+      '📱 黑户可贷',
+      '💰 无抵押 无担保'
+    ];
+
+    function createDanmaku() {
+      const container = document.getElementById('danmakuContainer');
+      const text = danmakuTexts[Math.floor(Math.random() * danmakuTexts.length)];
+      const el = document.createElement('div');
+      el.className = 'danmaku';
+      el.textContent = text;
+      el.style.top = Math.random() * 80 + 10 + '%';
+      el.style.fontSize = (0.8 + Math.random() * 0.6) + 'rem';
+      el.style.color = Math.random() > 0.5 ? '#39ff14' : '#ff1493';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 8000);
+    }
+
+    setInterval(createDanmaku, 1200);
+  </script>
+</body>
+</html>
