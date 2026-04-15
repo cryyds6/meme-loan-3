@@ -88,11 +88,9 @@
       progressEl.style.width = action.progress + '%';
       statusEl.textContent = `进度: ${action.progress}%`;
 
-      // 扫描线动画（在第2-5步显示）
+      // 扫描线显示控制（20%-80% 进度显示）
       if (action.progress >= 20 && action.progress <= 80) {
         scanLine.classList.remove('hidden');
-        scanLine.style.top = '0%';
-        scanLine.style.animation = 'scan 2s linear infinite';
       } else {
         scanLine.classList.add('hidden');
       }
@@ -112,7 +110,7 @@
       setTimeout(runActionSequence, action.duration);
     }
 
-    // 完成
+    // 完成处理 - 2.5秒后跳转
     function finishCheck() {
       promptEl.innerHTML = '<span class="text-success">🎉 验证通过！正在跳转...</span>';
       statusEl.textContent = '已完成';
@@ -120,10 +118,10 @@
       scanLine.classList.add('hidden');
       nextBtn.classList.remove('hidden');
       
-      // 3秒后自动跳转
+      // 2.5秒后自动跳转到结果页
       setTimeout(() => {
         window.location.href = 'result.html';
-      }, 3000);
+      }, 2500);
     }
 
     // 启动
