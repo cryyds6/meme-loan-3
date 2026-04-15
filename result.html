@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>审核结果 - 张张嘴摇摇头立马贷</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-red-900 via-black to-purple-900">
+  <div class="glass-card p-8 max-w-2xl w-full text-center relative overflow-hidden">
+    <!-- 装饰：警示符号 -->
+    <div class="absolute top-4 right-4 text-6xl opacity-20">⚠️</div>
+
+    <!-- 标题 -->
+    <h1 class="text-4xl md:text-5xl font-black mb-6 neon-pink">
+      🎉 恭喜您获得<br>
+      <span class="text-5xl md:text-6xl block mt-2">"2024年度<br>网贷受害者预备资格"</span>
+    </h1>
+
+    <!-- 信用分动画 -->
+    <div class="my-8">
+      <p class="text-gray-400 mb-2">您的信用评分</p>
+      <div id="score" class="result-score text-8xl font-bold text-red-500">-9999</div>
+      <p class="text-sm text-gray-500 mt-2">
+        （低于-9000分将被列为高风险用户）
+      </p>
+    </div>
+
+    <!-- 表情包区域 -->
+    <div class="my-8 text-8xl animate-bounce">
+      🥲
+    </div>
+
+    <!-- 讽刺文案 -->
+    <div class="bg-red-900/30 border border-red-500/50 rounded-xl p-4 mb-8">
+      <p class="text-lg">
+        <span class="neon-green font-bold">恭喜！</span> 您已成功通过所有荒诞审核<br>
+        下一步：准备迎接催收电话、高额利息、以及<br>
+        <span class="text-pink-400 font-bold">"身份盗用"</span> 大礼包！
+      </p>
+    </div>
+
+    <!-- 按钮组 -->
+    <div class="flex flex-col gap-4">
+      <a href="https://www.bilibili.com/video/BV1示例视频ID" target="_blank" class="btn-main">
+        🎬 查看反讽视频（推荐）
+      </a>
+      <a href="http://www.pbc.gov.cn/消保局" target="_blank" class="px-6 py-3 border border-gray-600 rounded-full hover:bg-gray-800 transition">
+        📚 学习金融知识（央行消保局）
+      </a>
+      <button onclick="location.reload()" class="text-sm text-gray-500 hover:text-gray-300 mt-4">
+        再试一次（假装我没贷）
+      </button>
+    </div>
+  </div>
+
+  <!-- 底部免责声明 -->
+  <footer class="mt-8 text-center text-xs text-gray-600 max-w-lg">
+    <p>
+      ⚠️ 本项目纯属艺术创作，讽刺某些非正规借贷广告。<br>
+      不收集任何人脸数据，不开通任何金融功能。<br>
+      请勿模仿，警惕真实借贷风险。
+    </p>
+  </footer>
+
+  <!-- 信用分滚动动画 -->
+  <script>
+    const scoreEl = document.getElementById('score');
+    let score = 0;
+    const target = -9999;
+    const duration = 2000; // 2秒
+    const startTime = Date.now();
+
+    function animateScore() {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutQuad
+      const ease = 1 - (1 - progress) * (1 - progress);
+      score = Math.floor(target * ease);
+      scoreEl.textContent = score;
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScore);
+      } else {
+        scoreEl.textContent = target;
+        // 添加闪烁效果
+        scoreEl.classList.add('animate-pulse');
+      }
+    }
+
+    animateScore();
+  </script>
+</body>
+</html>
