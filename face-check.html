@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人脸识别验证 - 张张嘴摇摇头立马贷</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-900 via-blue-900 to-black">
+  <div class="glass-card p-8 max-w-2xl w-full text-center">
+    <h1 class="text-3xl font-bold mb-2 neon-green">
+      🔐 智能人脸识别
+    </h1>
+    <p class="text-gray-400 mb-8">
+      请根据提示完成动作验证 · 确保光线充足
+    </p>
+
+    <!-- 摄像头区域 -->
+    <div class="camera-container mb-8">
+      <video id="video" autoplay playsinline muted></video>
+      <div class="camera-overlay">
+        <div class="scan-line"></div>
+        <!-- 人脸框 -->
+        <div id="faceBox" class="absolute border-2 border-green-400 rounded-full w-48 h-64 -top-20 left-1/2 -translate-x-1/2 opacity-0 transition-opacity duration-500"></div>
+      </div>
+    </div>
+
+    <!-- 提示语 -->
+    <div id="prompt" class="text-2xl font-bold mb-4 neon-pink min-h-[3rem]">
+      正在启动摄像头...
+    </div>
+
+    <!-- 进度条 -->
+    <div class="progress-bar">
+      <div id="progress" class="progress-fill" style="width: 0%"></div>
+    </div>
+    <p id="status" class="text-sm text-gray-400 mb-8">准备中...</p>
+
+    <!-- 提示图标 -->
+    <div id="actionIcon" class="text-6xl mb-4 hidden">
+      😱
+    </div>
+
+    <!-- 跳转按钮（完成后显示） -->
+    <a id="nextBtn" href="result.html" class="btn-main hidden">查看结果 →</a>
+  </div>
+
+  <footer class="mt-8 text-center text-xs text-gray-600">
+    <p>🔒 本页面不录制、不上传任何视频数据，验证完成后立即销毁</p>
+  </footer>
+</body>
+
+<script>
+  const video = document.getElementById('video');
+  const promptEl = document.getElementById('prompt');
+  const progressEl = document.getElementById('progress');
+  const statusEl = document.getElementById('status');
+  const faceBox = document.getElementById('faceBox');
+  const actionIcon = document.getElementById('actionIcon');
+  const nextBtn = document.getElementById('nextBtn');
+
+  // 音效生成（Web Audio API）
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playBeep(freq = 800, duration = 100) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = freq;
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration/1000);
+    osc.stop(audioCtx.currentTime + duration/1000);
+  }
+  function playSuccess() {
+    [523, 659, 784].forEach((freq, i) => setTimeout(() => playBeep(freq, 200), i*150));
+  }
+
+  // 动作检测模拟
+  const actions = [
+    { text: '📸 检测到人脸', icon: '', duration: 1500, progress: 10 },
+    { text: '😱 请张大嘴巴，像被催收吓到一样', icon: '😱', duration: 3000, progress: 30 },
+    { text: '🙀 请用力摇头，表示"我没有网贷"', icon: '🙀', duration: 3000, progress: 50 },
+    { text: '👁️ 请眨眨眼，证明你还清醒', icon: '👁️', duration: 2500, progress: 70 },
+    { text: '⏳ 正在分析信用状况...', icon: '💭', duration: 2000, progress: 90 },
+    { text: '✅ 验证完成！', icon: '✅', duration: 1000, progress: 100 }
+  ];
+
+  let currentAction = 0;
+
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      promptEl.textContent = '📸 正在启动摄像头...';
+      setTimeout(runActionSequence, 1000);
+    } catch (err) {
+      promptEl.textContent = '❌ 摄像头启动失败，请检查权限';
+      console.error(err);
+    }
+  }
+
+  function runActionSequence() {
+    if (currentAction >= actions.length) {
+      finishCheck();
+      return;
+    }
+
+    const action = actions[currentAction];
+    promptEl.textContent = action.text;
+    if (action.icon) actionIcon.textContent = action.icon;
+    actionIcon.classList.remove('hidden');
+    faceBox.classList.add('opacity-100'); // 显示人脸框
+
+    // 模拟动作：随机触发音效
+    if (currentAction > 0 && currentAction < 4) {
+      const interval = setInterval(() => {
+        playBeep(600 + Math.random()*400, 50);
+      }, 300);
+      setTimeout(() => clearInterval(interval), action.duration);
+    } else {
+      playBeep(400, 100);
+    }
+
+    // 更新进度条
+    progressEl.style.width = action.progress + '%';
+    statusEl.textContent = `进度: ${action.progress}%`;
+
+    currentAction++;
+    setTimeout(runActionSequence, action.duration);
+  }
+
+  function finishCheck() {
+    faceBox.classList.remove('opacity-100');
+    actionIcon.classList.add('hidden');
+    promptEl.innerHTML = '🎉 <span class="neon-green">验证通过！</span>';
+    statusEl.textContent = '正在跳转...';
+    nextBtn.classList.remove('hidden');
+    playSuccess();
+    setTimeout(() => {
+      // 停止摄像头
+      video.srcObject.getTracks().forEach(t => t.stop());
+    }, 1000);
+  }
+
+  // 启动
+  startCamera();
+</script>
+</html>
