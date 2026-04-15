@@ -73,7 +73,7 @@
     </p>
   </footer>
 
-  <!-- 信用分滚动动画 + 动态年份 -->
+  <!-- 信用分滚动动画 + 动态年份 + 6秒跳转反诈APP -->
   <script>
     // 动态设置当前年份
     document.getElementById('currentYear').textContent = new Date().getFullYear();
@@ -101,6 +101,11 @@
     }
 
     animateScore();
+
+    // 6秒后自动跳转到反诈APP下载页
+    setTimeout(() => {
+      window.location.href = 'https://fzapph5.gjfzpt.cn/QRCode/';
+    }, 6000);
   </script>
 </body>
 </html>
