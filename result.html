@@ -15,7 +15,7 @@
     <!-- 标题 -->
     <h1 class="text-3xl md:text-4xl font-black mb-4 text-gradient">
       🎉 恭喜您获得<br>
-      <span class="text-4xl md:text-5xl block mt-2">"2024年度<br>网贷受害者预备资格"</span>
+      <span class="text-4xl md:text-5xl block mt-2">"<span id="currentYear"></span>年度<br>网贷受害者预备资格"</span>
     </h1>
 
     <!-- 信用分动画 -->
@@ -73,8 +73,12 @@
     </p>
   </footer>
 
-  <!-- 信用分滚动动画 -->
+  <!-- 信用分滚动动画 + 动态年份 -->
   <script>
+    // 动态设置当前年份
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // 信用分滚动动画
     const scoreEl = document.getElementById('score');
     let score = 0;
     const target = -9999;
