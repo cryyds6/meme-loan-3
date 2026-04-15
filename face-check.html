@@ -7,143 +7,139 @@
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-gray-900 via-blue-900 to-black">
-  <div class="glass-card p-8 max-w-2xl w-full text-center">
-    <h1 class="text-3xl font-bold mb-2 neon-green">
+<body class="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+  <div class="card-glass p-6 md:p-10 max-w-2xl w-full text-center">
+    <!-- 标题 -->
+    <h1 class="text-2xl md:text-3xl font-bold mb-2 text-gradient">
       🔐 智能人脸识别
     </h1>
-    <p class="text-gray-400 mb-8">
-      请根据提示完成动作验证 · 确保光线充足
+    <p class="text-sm md:text-base text-secondary mb-6 md:mb-8">
+      请根据提示完成动作验证 · 纯模拟演示
     </p>
 
-    <!-- 摄像头区域 -->
-    <div class="camera-container mb-8">
-      <video id="video" autoplay playsinline muted></video>
-      <div class="camera-overlay">
-        <div class="scan-line"></div>
-        <!-- 人脸框 -->
-        <div id="faceBox" class="absolute border-2 border-green-400 rounded-full w-48 h-64 -top-20 left-1/2 -translate-x-1/2 opacity-0 transition-opacity duration-500"></div>
+    <!-- 模拟摄像头区域（静态图片 + 动画） -->
+    <div class="relative w-full max-w-md mx-auto mb-8">
+      <div class="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl border-4 border-primary shadow-lg overflow-hidden flex items-center justify-center">
+        <!-- 模拟人脸图标 -->
+        <div id="faceIcon" class="text-8xl md:text-9xl transition-all duration-300">
+          😊
+        </div>
+      </div>
+      
+      <!-- 扫描线动画 -->
+      <div id="scanLine" class="absolute left-0 right-0 h-1 bg-primary/50 shadow-lg hidden">
+        <div class="absolute left-1/2 -translate-x-1/2 w-8 h-8 bg-primary rounded-full border-4 border-white shadow"></div>
+      </div>
+
+      <!-- 动作提示图标 -->
+      <div id="actionIcon" class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-4xl bg-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg border-2 border-primary">
+        📸
       </div>
     </div>
 
     <!-- 提示语 -->
-    <div id="prompt" class="text-2xl font-bold mb-4 neon-pink min-h-[3rem]">
-      正在启动摄像头...
+    <div id="prompt" class="text-xl md:text-2xl font-bold mb-4 text-primary min-h-[3rem] flex items-center justify-center">
+      正在启动识别系统...
     </div>
 
     <!-- 进度条 -->
-    <div class="progress-bar">
+    <div class="progress-track mb-2">
       <div id="progress" class="progress-fill" style="width: 0%"></div>
     </div>
-    <p id="status" class="text-sm text-gray-400 mb-8">准备中...</p>
-
-    <!-- 提示图标 -->
-    <div id="actionIcon" class="text-6xl mb-4 hidden">
-      😱
-    </div>
+    <p id="status" class="text-xs md:text-sm text-muted mb-8">准备中...</p>
 
     <!-- 跳转按钮（完成后显示） -->
-    <a id="nextBtn" href="result.html" class="btn-main hidden">查看结果 →</a>
+    <a id="nextBtn" href="result.html" class="btn btn-primary btn-large hidden w-full md:w-auto">
+      🎉 查看结果
+    </a>
   </div>
 
-  <footer class="mt-8 text-center text-xs text-gray-600">
-    <p>🔒 本页面不录制、不上传任何视频数据，验证完成后立即销毁</p>
+  <!-- 底部说明 -->
+  <footer class="mt-8 text-center text-xs text-muted max-w-md mx-auto px-4">
+    <p>🔒 本页面为纯前端模拟，不调用摄像头，不收集任何数据</p>
   </footer>
+
+  <script>
+    const promptEl = document.getElementById('prompt');
+    const progressEl = document.getElementById('progress');
+    const statusEl = document.getElementById('status');
+    const faceIcon = document.getElementById('faceIcon');
+    const actionIcon = document.getElementById('actionIcon');
+    const scanLine = document.getElementById('scanLine');
+    const nextBtn = document.getElementById('nextBtn');
+
+    // 动作序列（纯模拟，无摄像头）
+    const actions = [
+      { text: '📸 正在检测人脸...', icon: '📸', face: '😊', progress: 10, duration: 1200 },
+      { text: '😱 请张大嘴巴，像被催收吓到一样', icon: '😱', face: '😮', progress: 30, duration: 2500 },
+      { text: '🙀 请用力摇头，表示"我没有网贷"', icon: '🙀', face: '😵', progress: 50, duration: 2500 },
+      { text: '👁️ 请眨眨眼，证明你还清醒', icon: '👁️', face: '😉', progress: 70, duration: 2000 },
+      { text: '⏳ 正在分析信用状况...', icon: '💭', face: '🤔', progress: 90, duration: 1500 },
+      { text: '✅ 验证通过！', icon: '✅', face: '😎', progress: 100, duration: 1000 }
+    ];
+
+    let currentAction = 0;
+
+    // 更新 UI
+    function updateUI(action) {
+      promptEl.textContent = action.text;
+      actionIcon.textContent = action.icon;
+      faceIcon.textContent = action.face;
+      progressEl.style.width = action.progress + '%';
+      statusEl.textContent = `进度: ${action.progress}%`;
+
+      // 扫描线动画（在第2-5步显示）
+      if (action.progress >= 20 && action.progress <= 80) {
+        scanLine.classList.remove('hidden');
+        scanLine.style.top = '0%';
+        scanLine.style.animation = 'scan 2s linear infinite';
+      } else {
+        scanLine.classList.add('hidden');
+      }
+    }
+
+    // 动作序列执行
+    function runActionSequence() {
+      if (currentAction >= actions.length) {
+        finishCheck();
+        return;
+      }
+
+      const action = actions[currentAction];
+      updateUI(action);
+      currentAction++;
+
+      setTimeout(runActionSequence, action.duration);
+    }
+
+    // 完成
+    function finishCheck() {
+      promptEl.innerHTML = '<span class="text-success">🎉 验证通过！正在跳转...</span>';
+      statusEl.textContent = '已完成';
+      actionIcon.classList.add('hidden');
+      scanLine.classList.add('hidden');
+      nextBtn.classList.remove('hidden');
+      
+      // 3秒后自动跳转
+      setTimeout(() => {
+        window.location.href = 'result.html';
+      }, 3000);
+    }
+
+    // 启动
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(runActionSequence, 500);
+    });
+
+    // 添加扫描线动画样式
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes scan {
+        0% { top: 0%; opacity: 1; }
+        100% { top: 100%; opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 </body>
-
-<script>
-  const video = document.getElementById('video');
-  const promptEl = document.getElementById('prompt');
-  const progressEl = document.getElementById('progress');
-  const statusEl = document.getElementById('status');
-  const faceBox = document.getElementById('faceBox');
-  const actionIcon = document.getElementById('actionIcon');
-  const nextBtn = document.getElementById('nextBtn');
-
-  // 音效生成（Web Audio API）
-  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  function playBeep(freq = 800, duration = 100) {
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.frequency.value = freq;
-    osc.start();
-    gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration/1000);
-    osc.stop(audioCtx.currentTime + duration/1000);
-  }
-  function playSuccess() {
-    [523, 659, 784].forEach((freq, i) => setTimeout(() => playBeep(freq, 200), i*150));
-  }
-
-  // 动作检测模拟
-  const actions = [
-    { text: '📸 检测到人脸', icon: '', duration: 1500, progress: 10 },
-    { text: '😱 请张大嘴巴，像被催收吓到一样', icon: '😱', duration: 3000, progress: 30 },
-    { text: '🙀 请用力摇头，表示"我没有网贷"', icon: '🙀', duration: 3000, progress: 50 },
-    { text: '👁️ 请眨眨眼，证明你还清醒', icon: '👁️', duration: 2500, progress: 70 },
-    { text: '⏳ 正在分析信用状况...', icon: '💭', duration: 2000, progress: 90 },
-    { text: '✅ 验证完成！', icon: '✅', duration: 1000, progress: 100 }
-  ];
-
-  let currentAction = 0;
-
-  async function startCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      video.srcObject = stream;
-      promptEl.textContent = '📸 正在启动摄像头...';
-      setTimeout(runActionSequence, 1000);
-    } catch (err) {
-      promptEl.textContent = '❌ 摄像头启动失败，请检查权限';
-      console.error(err);
-    }
-  }
-
-  function runActionSequence() {
-    if (currentAction >= actions.length) {
-      finishCheck();
-      return;
-    }
-
-    const action = actions[currentAction];
-    promptEl.textContent = action.text;
-    if (action.icon) actionIcon.textContent = action.icon;
-    actionIcon.classList.remove('hidden');
-    faceBox.classList.add('opacity-100'); // 显示人脸框
-
-    // 模拟动作：随机触发音效
-    if (currentAction > 0 && currentAction < 4) {
-      const interval = setInterval(() => {
-        playBeep(600 + Math.random()*400, 50);
-      }, 300);
-      setTimeout(() => clearInterval(interval), action.duration);
-    } else {
-      playBeep(400, 100);
-    }
-
-    // 更新进度条
-    progressEl.style.width = action.progress + '%';
-    statusEl.textContent = `进度: ${action.progress}%`;
-
-    currentAction++;
-    setTimeout(runActionSequence, action.duration);
-  }
-
-  function finishCheck() {
-    faceBox.classList.remove('opacity-100');
-    actionIcon.classList.add('hidden');
-    promptEl.innerHTML = '🎉 <span class="neon-green">验证通过！</span>';
-    statusEl.textContent = '正在跳转...';
-    nextBtn.classList.remove('hidden');
-    playSuccess();
-    setTimeout(() => {
-      // 停止摄像头
-      video.srcObject.getTracks().forEach(t => t.stop());
-    }, 1000);
-  }
-
-  // 启动
-  startCamera();
-</script>
 </html>
