@@ -1,0 +1,189 @@
+/* ============ meme-loan - 金融讽刺风样式 ============ */
+
+:root {
+  --gold: #ffd700;
+  --gold-dark: #b8860b;
+  --neon-green: #39ff14;
+  --neon-pink: #ff1493;
+  --bg-dark: #0a0a0a;
+  --bg-card: rgba(20, 20, 35, 0.8);
+  --text-light: #ffffff;
+  --text-gray: #cccccc;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a2e 100%);
+  color: var(--text-light);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============ 霓虹发光 ============ */
+.neon-gold {
+  color: var(--gold);
+  text-shadow: 0 0 10px var(--gold), 0 0 20px var(--gold), 0 0 30px var(--gold-dark);
+}
+.neon-green {
+  color: var(--neon-green);
+  text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+}
+.neon-pink {
+  color: var(--neon-pink);
+  text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+}
+
+/* ============ 玻璃态卡片 ============ */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* ============ 按钮 ============ */
+.btn-main {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+  color: var(--bg-dark);
+  font-weight: bold;
+  padding: 1rem 3rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-size: 1.5rem;
+  box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+  transition: all 0.3s ease;
+  animation: pulse-glow 2s infinite;
+}
+.btn-main:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+  50% { box-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+}
+
+/* ============ 倒计时 ============ */
+.countdown {
+  font-size: 4rem;
+  font-weight: bold;
+  color: var(--neon-pink);
+  text-shadow: 0 0 20px var(--neon-pink);
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ============ 弹幕漂浮 ============ */
+.danmaku {
+  position: fixed;
+  white-space: nowrap;
+  font-size: 1.2rem;
+  color: var(--neon-green);
+  opacity: 0.7;
+  animation: float-left 8s linear infinite;
+  pointer-events: none;
+}
+@keyframes float-left {
+  from { transform: translateX(100vw); }
+  to { transform: translateX(-100%); }
+}
+
+/* ============ 摄像头区域 ============ */
+.camera-container {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 3px solid var(--neon-green);
+  box-shadow: 0 0 30px rgba(57, 255, 20, 0.3);
+}
+#video {
+  width: 100%;
+  height: auto;
+  display: block;
+  transform: scaleX(-1); /* 镜像 */
+}
+.camera-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+}
+.scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--neon-green);
+  box-shadow: 0 0 10px var(--neon-green);
+  animation: scan 2s linear infinite;
+}
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+/* ============ 进度条 ============ */
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-green), var(--neon-pink));
+  border-radius: 10px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px var(--neon-green);
+}
+
+/* ============ 结局页 ============ */
+.result-title {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.result-score {
+  font-size: 5rem;
+  font-weight: bold;
+  color: var(--neon-pink);
+  text-shadow: 0 0 30px var(--neon-pink);
+  animation: score-pop 0.5s ease-out;
+}
+@keyframes score-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ============ 通用 ============ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.text-center { text-align: center; }
+.mt-4 { margin-top: 1rem; }
+.mt-8 { margin-top: 2rem; }
+.mb-8 { margin-bottom: 2rem; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.hidden { display: none; }
