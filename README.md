@@ -268,12 +268,11 @@ xdg-open index.html
 
 ### 反诈教育
 - [国家反诈中心](https://fzapph5.gjfzpt.cn/)
-- [公安部反诈案例库](https://fzapph5.gjfzpt.cn/#/case/caseList)
-- [中国人民银行金融消费权益保护局](http://www.pbc.gov.cn/zhujiguanju/1969/)
+- [国家反诈APP](https://fzapph5.gjfzpt.cn/QRCode/)
+
 
 ### 套路贷警示
 - [法治在线：借款13万还1300万](https://b23.tv/RlrzWAq)
-- [央视财经：套路贷套路大揭秘](https://www.bilibili.com/video/BV1示例)
 
 ### 技术参考
 - [TailwindCSS 文档](https://tailwindcss.com/)
