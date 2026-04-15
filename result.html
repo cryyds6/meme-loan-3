@@ -63,6 +63,16 @@
         🔄 再试一次（假装我没贷）
       </button>
     </div>
+
+    <!-- 一键分享按钮 -->
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <button id="shareBtn" class="btn btn-primary w-full md:w-auto">
+        📋 一键分享（复制文案）
+      </button>
+      <p id="shareMsg" class="text-xs text-muted mt-2 hidden">
+        ✅ 文案已复制到剪切板！
+      </p>
+    </div>
   </div>
 
   <!-- 底部免责声明 -->
@@ -74,12 +84,12 @@
     </p>
   </footer>
 
-  <!-- 信用分滚动动画 + 动态年份 -->
+  <!-- 信用分滚动动画 + 动态年份 + 分享功能 -->
   <script>
-    // 动态设置当前年份
+    // ============ 动态年份 ============
     document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-    // 信用分滚动动画
+    // ============ 信用分动画 ============
     const scoreEl = document.getElementById('score');
     let score = 0;
     const target = -9999;
@@ -89,7 +99,7 @@
     function animateScore() {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const ease = 1 - Math.pow(1 - progress, 3); // easeOutCubic
+      const ease = 1 - Math.pow(1 - progress, 3);
       score = Math.floor(target * ease);
       scoreEl.textContent = score;
 
@@ -102,6 +112,55 @@
     }
 
     animateScore();
+
+    // ============ 分享功能 ============
+    // 多个搞笑文案（内置）
+    const shareTexts = [
+      `我刚通过了"张张嘴摇摇头立马贷"的审核，额度高达30,000,000元！张嘴就放款，摇头就通过，简直不要太离谱😱 快来体验这个荒诞过程：https://meme-loan-3.pages.dev/`,
+
+      `这个贷款页面太离谱了！让我张嘴摇头就批了3000万额度，全程不到20秒🤣 你敢信？试试看：https://meme-loan-3.pages.dev/`,
+
+      `笑死，这个"金融APP"让我张嘴摇头就给了我30,000,000额度，还说是"2024年度网贷受害者预备资格"😂 快来感受荒诞：https://meme-loan-3.pages.dev/`,
+
+      `紧急分享：这个页面模拟了网贷审核的荒诞流程，张嘴→摇头→到账，额度居然有3000万！快来试试：https://meme-loan-3.pages.dev/`,
+
+      `亲测有效！这个页面让我做了几个奇怪的表情就通过了"审核"，额度30,000,000元🎉 速度太快了，链接：https://meme-loan-3.pages.dev/`
+    ];
+
+    const shareBtn = document.getElementById('shareBtn');
+    const shareMsg = document.getElementById('shareMsg');
+
+    shareBtn.addEventListener('click', async () => {
+      // 随机选一个文案
+      const text = shareTexts[Math.floor(Math.random() * shareTexts.length)];
+
+      try {
+        await navigator.clipboard.writeText(text);
+        shareMsg.classList.remove('hidden');
+        shareBtn.textContent = '✅ 已复制（再点一次）';
+        
+        // 2秒后恢复按钮文字
+        setTimeout(() => {
+          shareBtn.textContent = '📋 一键分享（复制文案）';
+          shareMsg.classList.add('hidden');
+        }, 2000);
+      } catch (err) {
+        // 降级方案：选中文本
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        
+        shareMsg.classList.remove('hidden');
+        shareBtn.textContent = '✅ 已复制';
+        setTimeout(() => {
+          shareBtn.textContent = '📋 一键分享（复制文案）';
+          shareMsg.classList.add('hidden');
+        }, 2000);
+      }
+    });
   </script>
 </body>
 </html>
